@@ -3,6 +3,7 @@ package grpc
 import (
 	"net"
 	"order-service/pkg/api/test"
+	"order-service/pkg/logger"
 
 	"google.golang.org/grpc"
 )
@@ -12,14 +13,15 @@ type Server struct {
 	h   Handler
 }
 
-func NewServer(h Handler) *Server {
+func NewServer(h Handler, logger *logger.Logger) *Server {
 	return &Server{
-		srv: grpc.NewServer(),
-		h:   h,
+		srv: grpc.NewServer(
+			grpc.UnaryInterceptor(InjectLoggerInterceptor(logger))),
+		h: h,
 	}
 }
-func (s *Server) StartServer() error {
-	lis, err := net.Listen("tcp", ":50051")
+func (s *Server) StartServer(addr string) error {
+	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
