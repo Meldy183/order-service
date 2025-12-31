@@ -36,8 +36,8 @@ func (r *OrderRepository) Insert(ctx context.Context, order models.Order) (model
 		return models.Order{}, errors.New("invalid order")
 	}
 	id := uuid.NewString()
-	r.db[id] = order
 	order.ID = id
+	r.db[id] = order
 	return order, nil
 }
 func (r *OrderRepository) Update(ctx context.Context, order models.Order) (models.Order, error) {
