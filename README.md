@@ -12,7 +12,7 @@ The following best practices were applied for the app's code:
 ## Installation
 To run this application, you have to have access to this project's code and configure an SSH key for the local machine you run it on. 
 ```
-git clone https://gitlab.crja72.ru/golang/2025/spring/course/students/173343-miyto2006-course-1478
+git clone [https://gitlab.crja72.ru/golang/2025/spring/course/students/173343-miyto2006-course-1478](https://github.com/Meldy183/order-service)
 go run ./cmd/order-app/main.go
 ```
 ## gRPC API Usage
