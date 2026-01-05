@@ -28,3 +28,8 @@ func (s *Server) StartServer(addr string) error {
 	test.RegisterOrderServiceServer(s.srv, &s.h)
 	return s.srv.Serve(lis)
 }
+
+func (s *Server) StopServer() error {
+	s.srv.GracefulStop()
+	return nil
+}
