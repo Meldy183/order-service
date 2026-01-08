@@ -1,0 +1,27 @@
+.PHONY: migrate-up migrate-down migrate-create
+
+DATABASE_URL ?= postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+
+migrate-up:
+	go run ./cmd/migrate/main.go -db "$(DATABASE_URL)" -direction up
+
+migrate-down:
+	go run ./cmd/migrate/main.go -db "$(DATABASE_URL)" -direction down
+
+migrate-create:
+	@read -p "Enter migration name: " name; \
+	touch migrations/$$(printf "%06d" $$(($$(ls migrations/*.up.sql 2>/dev/null | wc -l) + 1)))_$${name}.up.sql; \
+	touch migrations/$$(printf "%06d" $$(($$(ls migrations/*.down.sql 2>/dev/null | wc -l) + 1)))_$${name}.down.sql
+
+build:
+	go build -o bin/order-service ./cmd/order-service/main.go
+	go build -o bin/migrate ./cmd/migrate/main.go
+
+docker-migrate-up:
+	docker build --target migrate -t order-service-migrate .
+	docker run --rm --network host order-service-migrate -db "$(DATABASE_URL)" -direction up
+
+docker-migrate-down:
+	docker build --target migrate -t order-service-migrate .
+	docker run --rm --network host order-service-migrate -db "$(DATABASE_URL)" -direction down
+

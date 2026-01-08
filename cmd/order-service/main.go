@@ -15,18 +15,15 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load("./config/config.env")
-	if err != nil {
-		fmt.Println("Error loading .env file")
-	}
 	configPath := os.Getenv("CONFIG_PATH")
 	cfg, err := config.MustParseConfig(configPath)
-	fmt.Println(cfg)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(cfg, configPath)
 	ctx := context.Background()
 	log, err := logger.NewLogger(cfg.Server.Env)
 	if err != nil {
