@@ -5,16 +5,19 @@ import (
 	"fmt"
 	"net/http"
 	"order-service/internal/config"
+	rediscache "order-service/internal/repository/cache/redis"
 	"order-service/internal/repository/storage/postgresql"
 	"order-service/internal/service"
 	"order-service/internal/transport/gateway"
 	"order-service/internal/transport/grpc"
+	"order-service/pkg/cache"
 	"order-service/pkg/db"
 	"order-service/pkg/logger"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -34,8 +37,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	redisClient, err := cache.NewRedisClient(cfg.Redis)
+	if err != nil {
+		panic(err)
+	}
+
 	orderRepo := postgresql.NewOrderRepository(pool.Pool)
-	orderService := service.NewOrderService(orderRepo)
+	cachedRepo := rediscache.NewCachedOrderRepository(orderRepo, redisClient, 5*time.Minute)
+	orderService := service.NewOrderService(cachedRepo)
 	handler := grpc.NewHandler(orderService)
 	server := grpc.NewServer(handler, log)
 

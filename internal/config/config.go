@@ -2,14 +2,16 @@ package config
 
 import (
 	"fmt"
+	"order-service/pkg/cache"
 	"order-service/pkg/db"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
-	Server Server      `yaml:"server"`
-	DB     db.ConfigDB `yaml:"db"`
+	Server Server            `yaml:"server"`
+	DB     db.ConfigDB       `yaml:"db"`
+	Redis  cache.ConfigRedis `yaml:"redis"`
 }
 
 type Server struct {
